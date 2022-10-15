@@ -13,4 +13,19 @@
 3.无法做到定制化开发与维护
 
 ## 架构设计
-<img src="/Users/mengxuanping/Documents/思维导图/LogCollection架构设计.png" alt="LogCollection架构设计" style="zoom:50%;"/>
+![架构设计](Resource/LogCollection架构设计.png)
+
+## 主要组件介绍
+LogAgent： 日志收集客户端，用来收集服务器上的日志。
+Kafka：高吞吐量的分布式队列（Link开发，apache顶级开源项目）。
+ElasticSearch：开源的搜索引擎，提供基于HTTP RESTful的web接口。
+Kibana：开源的ES数据分析和可视化工具。
+Hadoop：分布式计算框架，能够对大量数据进行分布式处理的平台。
+Storm：一个免费且开源的分布式实时计算系统
+
+## 学习到的技能
+1.服务端agent开发
+2.后段服务组件开发
+3.Kafka和zookeeper的使用
+4.ES和Kibana的使用
+5.etcd的使用
