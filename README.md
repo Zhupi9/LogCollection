@@ -52,4 +52,10 @@ Storm：一个免费且开源的分布式实时计算系统
 1. 0：把数据发送给leader就结束
 2. 1: 把数据发送给leader等待leader的ack
 3. 2: 把数据发送给leader，follower拉去数据回复ack给leader，leader再回复ack
-
+## ZooKeeper
+zookeeper是一个分布式的，开放源码的分布式应用程序协调服务，时Google的Chubby一个开源的实现，他是集群的管理者，监视着集群中各个节点的状态根据节点提交的反馈进行下一步的合理操作。最终，将简单易用的接口和性能高效、功能稳定的系统提供给用户
+## LogAgent的工作流程
+1. 读日志-tailf第三方库
+2. 往kafka写日志
+## go_ini模块
+读取配置文件，并且映射到结构体上
