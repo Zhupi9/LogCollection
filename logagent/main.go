@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"logagent/conf"
+	"logagent/etcd"
 	"logagent/kafka"
 	"logagent/taillog"
 	"time"
@@ -20,7 +21,7 @@ func run() {
 		select {
 		case line := <-taillog.ReadChan():
 			//2.发送到kafka
-			kafka.SendToKafka(cfg.KafkaConf.Topic, line.Text)
+			kafka.SendToKafka(cfg.EtcdConf.Address, line.Text)
 		default:
 			time.Sleep(time.Second)
 		}
@@ -43,13 +44,23 @@ func main() {
 		fmt.Println("Init kafka error,", err)
 		return
 	}
-	//2.打开日志文件准备收集日志
-	err = taillog.Init(cfg.TaillogConf.Path)
+	//2.初始化etcd
+	err = etcd.Init([]string{cfg.EtcdConf.Address},
+		time.Duration(cfg.EtcdConf.Timeout)*time.Second)
 	if err != nil {
-		fmt.Println("Init tail failed, err:", err)
+		fmt.Println("init etcd error: err", err)
 		return
 	}
-
-	run()
-
+	//2.1 从etcd拉去日志收集项配置信息
+	logConf, err := etcd.GetConfByKey("conf")
+	if err != nil {
+		fmt.Println("get config from etcd failed, err:", err)
+		return
+	}
+	fmt.Println("get config success:")
+	for i, v := range logConf {
+		fmt.Printf("index:%v, path:%v, topic:%v\n", i, v.Path, v.Topic)
+	}
+	//2.2 构建watcher取件事配置信息变化，实现热加载
+	//run()
 }
