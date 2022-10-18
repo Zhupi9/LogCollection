@@ -14,8 +14,8 @@ var (
 )
 
 type LogEntry struct {
-	Path  string `json:"path"`
-	Topic string `json:"topic"`
+	Path  string `json:"path"`  //日志存放的路径
+	Topic string `json:"topic"` //日志发往kafka的哪个topic
 }
 
 // etcd初始化

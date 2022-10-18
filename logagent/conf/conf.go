@@ -9,11 +9,13 @@ type AppConf struct {
 
 type KafkaConf struct {
 	Address string `ini:"address"`
+	MaxSize int    `ini:"max_chan_size"`
 }
 
 type EtcdConf struct {
 	Address string `ini:"address"`
 	Timeout int    `ini:"timeout"`
+	Key     string `ini:"collect_log_key"`
 }
 
 // -----unused -----

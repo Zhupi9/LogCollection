@@ -2,16 +2,26 @@ package taillog
 
 import (
 	"fmt"
+	"logagent/kafka"
+
 	"github.com/hpcloud/tail"
 )
 
 // 专门从日志文件收集日志的模块
+/*
 var (
 	tails *tail.Tail
 )
+*/
+
+type TailObj struct { //一个日志收集的实例
+	path     string
+	topic    string
+	instance *tail.Tail
+}
 
 // 初始化tail
-func Init(fileName string) (err error) {
+func (this *TailObj) Init() (err error) {
 	config := tail.Config{ //tails的配置
 		ReOpen:    true,                                 //重新打开
 		Follow:    true,                                 //是否跟随
@@ -21,7 +31,7 @@ func Init(fileName string) (err error) {
 
 	}
 	//创建一个读取日志对象tails
-	tails, err = tail.TailFile(fileName, config)
+	this.instance, err = tail.TailFile(this.path, config)
 	if err != nil {
 		fmt.Println("tail file create failed, err:", err)
 		return
@@ -30,7 +40,29 @@ func Init(fileName string) (err error) {
 	return
 }
 
-func ReadChan() <-chan *tail.Line {
-	return tails.Lines
+func NewTailObj(path, topic string) (tailObj *TailObj, err error) {
+	tailObj = &TailObj{
+		path:  path,
+		topic: topic,
+	}
+	err = tailObj.Init()
+	return
+}
 
+func (this *TailObj) Run() {
+	for {
+		select {
+		case line := <-this.instance.Lines:
+			/*
+
+					kafka.SendToKafka(this.topic, line.Text)
+				default:
+					time.Sleep(time.Second)
+				}
+			*/
+			//将日志发送到一个通道中
+			kafka.SendToChan(this.topic, line.Text)
+			//由kafka启动协程来接受日志
+		}
+	}
 }
