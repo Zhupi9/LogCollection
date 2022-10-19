@@ -1,6 +1,7 @@
 package taillog
 
 import (
+	"context"
 	"fmt"
 	"logagent/kafka"
 
@@ -8,16 +9,14 @@ import (
 )
 
 // 专门从日志文件收集日志的模块
-/*
-var (
-	tails *tail.Tail
-)
-*/
 
 type TailObj struct { //一个日志收集的实例
 	path     string
 	topic    string
 	instance *tail.Tail
+	//能够控制tail的退出
+	ctx    context.Context
+	cancel context.CancelFunc
 }
 
 // 初始化tail
@@ -41,9 +40,12 @@ func (this *TailObj) Init() (err error) {
 }
 
 func NewTailObj(path, topic string) (tailObj *TailObj, err error) {
+	ctx, cancel := context.WithCancel(context.Background())
 	tailObj = &TailObj{
-		path:  path,
-		topic: topic,
+		path:   path,
+		topic:  topic,
+		ctx:    ctx,
+		cancel: cancel,
 	}
 	err = tailObj.Init()
 	return
@@ -52,6 +54,9 @@ func NewTailObj(path, topic string) (tailObj *TailObj, err error) {
 func (this *TailObj) Run() {
 	for {
 		select {
+		case <-this.ctx.Done():
+			fmt.Printf("tail task:%v exit...\n", this.path+this.topic)
+			return
 		case line := <-this.instance.Lines:
 			/*
 

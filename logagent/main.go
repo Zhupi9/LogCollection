@@ -7,6 +7,7 @@ import (
 	"logagent/etcd"
 	"logagent/kafka"
 	"logagent/taillog"
+	"sync"
 	"time"
 
 	"gopkg.in/ini.v1"
@@ -48,9 +49,13 @@ func main() {
 	for i, v := range logEntryConf {
 		fmt.Printf("index:%v, path:%v, topic:%v\n", i, v.Path, v.Topic)
 	}
-	//2.2 构建watcher取件事配置信息变化，实现热加载
 
 	//3.收集日志发到kafka
 	//3.1循环所有日志配置，创建TailObj
 	taillog.InitTailMgr(logEntryConf)
+	// 2.2设置一个watcher去见识日志收集的变化
+	var wg sync.WaitGroup
+	wg.Add(1)
+	go etcd.Watcher(cfg.EtcdConf.Key, taillog.SendNewConfToChan())
+	wg.Wait()
 }

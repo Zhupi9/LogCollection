@@ -53,3 +53,28 @@ func GetConfByKey(key string) (confs []*LogEntry, err error) {
 
 	return
 }
+
+func Watcher(key string, newConfChan chan<- []*LogEntry) {
+	ch := cli.Watch(context.Background(), key)
+	for wresp := range ch {
+		for _, evt := range wresp.Events {
+			fmt.Printf("type:%v, key:%v, value:%v\n", evt.Type, string(evt.Kv.Key), string(evt.Kv.Value))
+			//TODO 通知别tailMgr
+			//?先判断操作的类型
+			var newConf = new([]*LogEntry)
+			if evt.Type == clientv3.EventTypeDelete {
+				//如果是删除操作,传递一个空配置项
+				newConfChan <- *newConf
+			} else {
+				err := json.Unmarshal(evt.Kv.Value, &newConf)
+				if err != nil {
+					fmt.Println("unmarshal evt.Kv.value error:", err)
+					continue
+				}
+				fmt.Printf("get new conf:%v\n", newConf)
+				newConfChan <- *newConf
+			}
+
+		}
+	}
+}
