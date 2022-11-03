@@ -82,3 +82,13 @@ etcd是使用Go语言开发的一个开源的，高可用的分布式key-value�
 etcd作为一个高可用键值存储系统，天生就是为集群化而设计的。
 #### 搭建集群
 
+## LogTransfer
+从Kafka中读取日志，发送到ES，并使用Kibana做可视化展示
+## 系统监控
+方案一：gopsutil做系统监控信息的采，写入influxDB，使用grafana做展示
+方案二：prometheus做监控，采集性能指标数据，保存起来，使用grafana作战时
+## ElasticSearch
+### ES简介
+ElasticSearch是一个基于Lucene构建的开源、分布式、RESTful的全文搜索引擎
+
+## Kibana

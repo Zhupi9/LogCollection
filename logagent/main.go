@@ -1,4 +1,5 @@
-// TODO 实现watch监控配置，热修改tail读取日志
+// *（已完成）TODO 实现watch监控配置，热修改tail读取日志
+
 package main
 
 import (
@@ -14,7 +15,7 @@ import (
 )
 
 var (
-	cfg = new(conf.AppConf)
+	cfg = new(conf.LogAgentConf)
 )
 
 // logAgent入口程序
